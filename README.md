@@ -1,1 +1,1 @@
-# Example# Skillit
+# Skillit
