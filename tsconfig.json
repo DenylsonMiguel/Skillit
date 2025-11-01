@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "rootDir": "src",
+        "outDir": "dist",
+        "module": "nodenext",
+        "target": "esnext",
+        "types": ["node", "express"],
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "strict": true,
+        "jsx": "react-jsx",
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "noUncheckedSideEffectImports": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "typeRoots": ["./types", "./node_modules/@types"],
+        "resolveJsonModule": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
