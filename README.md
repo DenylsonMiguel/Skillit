@@ -68,7 +68,7 @@ npm start
 | <span style="color: #ffc107;">PUT</span> | `/user/:id` | Updates user data (name or password) | ✅ |
 | <span style="color: #28a745;">GET</span> | `/me` | Returns authenticated user data | ✅ |
 
-### **Skills** *(to be implemented)*
+### **Skills**
 | Method | Route | Description | JWT Required |
 |--------|-------|------------|--------------|
 | <span style="color: #007bff;">POST</span> | `/skill` | Creates a skill for a user | ✅ |
@@ -107,6 +107,20 @@ For /auth/register, password must be at least 8 characters and name between 3 an
 }
 ```
 
+- PUT `/user/:id`
+```json
+{
+    "name": "newExampleName"
+}
+```
+
+- POST `/skill`
+```json
+{
+    "title": "example",
+    "message": "Example message for API docs"
+}
+```
 ## Final considerations
 
 **Skillit was undoubtedly a great way to learn, as I had to work with many different things. I had some problems during that time, but in the end I managed to build this application.**

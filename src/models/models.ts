@@ -11,30 +11,30 @@ class Vote {
 }
 
 // ----------------- UPVOTE -----------------
-export interface IUpvote extends Document {
+export interface Upvote extends Document {
     author: string;
     createdAt: Date;
 }
 
-const upvoteSchema = new Schema<IUpvote>({
+const upvoteSchema = new Schema<Upvote>({
     author: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 
-export const UpvoteModel = mongoose.model<IUpvote>("Upvote", upvoteSchema);
+export const UpvoteModel = mongoose.model<Upvote>("Upvote", upvoteSchema);
 
-// ----------------- DOWNVOTE -----------------
-export interface IDownvote extends Document {
+// ---------------- DOWNVOTE ----------------
+export interface Downvote extends Document {
     author: string;
     createdAt: Date;
 }
 
-const downvoteSchema = new Schema<IDownvote>({
+const downvoteSchema = new Schema<Downvote>({
     author: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 
-export const DownvoteModel = mongoose.model<IDownvote>("Downvote", downvoteSchema);
+export const DownvoteModel = mongoose.model<Downvote>("Downvote", downvoteSchema);
 
 // ------------------ POST ------------------
 export interface Post extends Document {
@@ -42,8 +42,8 @@ export interface Post extends Document {
     message: string;
     author: string;
     createdAt: Date;
-    upvotes: IUpvote[];
-    downvotes: IDownvote[];
+    upvotes: Upvote[];
+    downvotes: Downvote[];
 }
 
 const postSchema = new Schema<Post>({
