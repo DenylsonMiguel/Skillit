@@ -14,6 +14,11 @@ class SkillController {
         const post = this.service.create(newPost, req.user);
         res.status(201).json(post);
     }
+    
+    getAllSkills = async (req:Request, res:Response) => {
+        const skills = this.service.getAll;
+        res.json(skills);
+    }
 }
 
 const skillController = new SkillController();

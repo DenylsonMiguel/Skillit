@@ -4,7 +4,7 @@ import type { Express } from "express";
 import "dotenv/config";
 
 if (!process.env.HOST)
-    throw new Error("Host not defined");
+  throw new Error("HOST not defined in environment variables");
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -17,19 +17,24 @@ const options: swaggerJSDoc.Options = {
     servers: [
       {
         url: process.env.HOST,
+        description: "Main server",
       },
     ],
   },
-  apis: ["dist/**/*.js"],
+  apis: [
+    "src/routes/**/*.ts",
+    "dist/routes/**/*.js",
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export function setupSwagger(app: Express): void {
-    try {
-        app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-        console.log("Swagger started \n");
-    } catch (err) {
-        throw new Error("Error on start Swagger: " + err);
-    }
+  try {
+    app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    console.log("Swagger UI available at: /api \n");
+  } catch (err) {
+    console.error("Error starting Swagger:", err);
+    throw new Error("Error starting Swagger: " + err);
+  }
 }
