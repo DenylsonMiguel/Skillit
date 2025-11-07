@@ -179,5 +179,3 @@ userRoutes.get('/me', verifyJWT, userController.whoAmI);
 userRoutes.delete("/user/:id", userController.deleteUser);
 
 export default userRoutes;
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDdlOTZhOThmMzgyNGM1NmVhMjkyYiIsIm5hbWUiOiJEZW55bHNvbk1pZ3VlbCIsImlhdCI6MTc2MjM4ODk5NSwiZXhwIjoxNzYyMzkyNTk1fQ.E5Nn_Wleu5ct_uz5C-lmT3J9XJIN_3w5j8vdNq3f80I

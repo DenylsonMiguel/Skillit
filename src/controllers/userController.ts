@@ -6,10 +6,10 @@ class UserController {
     
     register = async (req: Request, res: Response) => {
         const data = { name: req.body.name, password: req.body.password };
-        if (data.password.length < 8)
-            return res.status(422).json({ "error": "Password length must be greater than 8 characters" });
         if (!data.password || !data.name)
             return res.status(400).json({ "error": "Password and Name as required" });
+        if (data.password.length < 8)
+            return res.status(422).json({ "error": "Password length must be greater than 8 characters" });
         if (data.name.length < 3 || data.name.length > 20)
             return res.status(422).json({ "error": "the name must be between 3 and 20 characters" });
         

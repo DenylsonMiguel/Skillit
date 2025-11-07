@@ -6,18 +6,36 @@ class SkillController {
     private service = skillService();
     
     createSkill = async (req: Request, res: Response) => {
-        const newPost = req.body;
-        if (!newPost)
-            return res.status(401).json({ error: "Insert a New Post" });
+        const data = { title: req.body.title, message: req.body.message };
         if (!req.user)
             return res.status(406).json({ error: "Login is required" });
-        const post = this.service.create(newPost, req.user);
+        if (!data.title || !data.message)
+            return res.status(400).json({ error: "Title and Message as required" });
+        const post = this.service.create(data, req.user);
         res.status(201).json(post);
     }
     
     getAllSkills = async (req:Request, res:Response) => {
-        const skills = this.service.getAll;
+        const skills = await this.service.getAll();
         res.json(skills);
+    }
+    
+    getSkillById = async (req:Request, res:Response) => {
+        if (!req.params.id)
+            return res.status(401).json("Invalid or missing ID");
+        const result = await this.service.getById(req.params.id);
+        if (!result.post)
+            return res.status(result.status).json({ error: result.error });
+        res.json(result.post);
+    }
+    
+    getAllSkillsOfAUser = async (req:Request, res:Response) => {
+        if (!req.params.id)
+            return res.status(401).json("Invalid or missing ID");
+        const result = await this.service.getAllOfUser(req.params.id);
+        if (!result.posts)
+            res.status(result.status).json({ error: result.error });
+        res.json(result.posts);
     }
 }
 

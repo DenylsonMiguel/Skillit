@@ -6,8 +6,8 @@ const skillRoutes = Router();
 
 skillRoutes.post('/skill', verifyJWT, skillController.createSkill);
 skillRoutes.get('/skills', skillController.getAllSkills);
-// skillRoutes.get('/skill/:id', skillController.getSkill);
-// skillRoutes.get('/skills/:id', skillController.getAllSkillsOfAUser);
+skillRoutes.get('/skill/:id', skillController.getSkillById);
+skillRoutes.get('/skills/:id', skillController.getAllSkillsOfAUser);
 // skillRoutes.put('/skill/:id', verifyJWT, skillController.updateSkill);
 // skillRoutes.delete('/skill/:id', verifyJWT, skillController.deleteSkill);
 

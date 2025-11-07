@@ -1,15 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// ----------------- VOTE -----------------
-class Vote {
-    author: string;
-    postId: string;
-    constructor(author: string, postId: string) {
-        this.author = author;
-        this.postId = postId;
-    }
-}
-
 // ----------------- UPVOTE -----------------
 export interface Upvote extends Document {
     author: string;
@@ -61,7 +51,7 @@ export const PostModel = mongoose.model<Post>("Post", postSchema);
 export interface User extends Document {
     name: string;
     password: string;
-    posts: Post[];
+    posts: mongoose.Types.ObjectId[];
     createdAt: Date;
 }
 
@@ -69,7 +59,7 @@ const userSchema = new Schema<User>({
     name: { type: String, required: true },
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
-    posts: { type: [postSchema], default: [] }
+    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
 
 export const UserModel = mongoose.model<User>("User", userSchema);
