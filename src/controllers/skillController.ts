@@ -37,6 +37,23 @@ class SkillController {
             res.status(result.status).json({ error: result.error });
         res.json(result.posts);
     }
+    
+    updateSkill = async (req: Request, res:Response) => {
+        const { id } = req.params;
+        if (!id)
+            return res.status(401).json({ error: "Id is required" });
+        if (!req.user)
+            return res.status(406).json({ error: "User not loged" });
+        const userName = req.user.name;
+        const updates = req.body;
+        delete updates._id;
+        delete updates.__v;
+        delete updates.createdAt;
+        const result = await this.service.update(userName, id, updates);
+        if (!result.post)
+            return res.status(result.status).json({ error: result.error });
+        res.status(result.status).json({ post: result.post });
+    }
 }
 
 const skillController = new SkillController();
