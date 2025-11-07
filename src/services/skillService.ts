@@ -43,6 +43,21 @@ class SkillService {
         }
         return { posts: posts, status: 200, error: "" };
     }
+    
+    async update(name: string, id: string, updates: { title?: string, message?: string }): Promise<{ status: number; error: string; post?: Post }> {
+        const user = await PostModel.findById(id).lean();
+        if (!user)
+            return { status: 404, error: "Not found" };
+        const userName = user.author;
+        if (!userName)
+            return { status: 404, error: "Not found" };
+        if (name !== userName)
+            return { status: 403, error: "Forbidden" };
+        const post = await PostModel.findByIdAndUpdate(id, updates, { new: true }).lean();
+        if (!post)
+            return { status: 404, error: "Not found" };
+        return { status: 200, error: "", post: post as unknown as Post };
+    }
 }
 
 export default function skillService() {
