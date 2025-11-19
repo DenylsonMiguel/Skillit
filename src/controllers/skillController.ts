@@ -38,21 +38,15 @@ class SkillController {
         res.json(result.posts);
     }
     
-    updateSkill = async (req: Request, res:Response) => {
-        const { id } = req.params;
-        if (!id)
-            return res.status(401).json({ error: "Id is required" });
-        if (!req.user)
-            return res.status(406).json({ error: "User not loged" });
-        const userName = req.user.name;
-        const updates = req.body;
-        delete updates._id;
-        delete updates.__v;
-        delete updates.createdAt;
-        const result = await this.service.update(userName, id, updates);
-        if (!result.post)
-            return res.status(result.status).json({ error: result.error });
-        res.status(result.status).json({ post: result.post });
+    deleteSkill = async (req:Request, res:Response) => {
+      if (!req.params.id)
+        return res.status(401).json("Invalid or missing ID");
+      if (!req.user)
+        return res.status(406).json({ error: "Login is required" });
+      const result = await this.service.deletePost(req.params.id, req.user);
+      if (!result.post)
+        return res.status(result.status).json({ error: result.error });
+      res.status(200).json({ post: result.post });
     }
 }
 

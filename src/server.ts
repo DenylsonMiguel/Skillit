@@ -15,7 +15,7 @@ const limiter = rateLimit({
   max: 100
 });
 
-app.use(morgan("combined"));
+app.use(morgan("dev"));
 app.use(limiter);
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
