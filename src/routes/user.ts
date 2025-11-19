@@ -176,6 +176,6 @@ userRoutes.put('/user/:id', verifyJWT, userController.updateUser);
  */
 userRoutes.get('/me', verifyJWT, userController.whoAmI);
 
-userRoutes.delete("/user/:id", userController.deleteUser);
+userRoutes.delete("/user/:id", verifyJWT, userController.deleteUser);
 
 export default userRoutes;

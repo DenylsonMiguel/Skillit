@@ -37,6 +37,17 @@ class SkillController {
             res.status(result.status).json({ error: result.error });
         res.json(result.posts);
     }
+    
+    deleteSkill = async (req:Request, res:Response) => {
+      if (!req.params.id)
+        return res.status(401).json("Invalid or missing ID");
+      if (!req.user)
+        return res.status(406).json({ error: "Login is required" });
+      const result = await this.service.deletePost(req.params.id, req.user);
+      if (!result.post)
+        return res.status(result.status).json({ error: result.error });
+      res.status(200).json({ post: result.post });
+    }
 }
 
 const skillController = new SkillController();

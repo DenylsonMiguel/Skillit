@@ -43,6 +43,21 @@ class SkillService {
         }
         return { posts: posts, status: 200, error: "" };
     }
+    
+    async deletePost(id: string, user: UserTokenInfo): Promise<{ status: number, error: string, post?: Post }> {
+      try {
+        const post = await PostModel.findById(id);
+        if (!post)
+          return { status: 404, error: "Post not found" };
+        if (post.author != user.name)
+          return { status: 406, error: "Not authorized" };
+        await post.deleteOne();
+        return { status: 200, error: "", post: post };
+      } catch (err) {
+        console.error(`An Error as ocurrupted: ${err}`);
+        return { status: 500, error: "Internal server error" };
+      }
+    }
 }
 
 export default function skillService() {
