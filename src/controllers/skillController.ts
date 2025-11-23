@@ -48,6 +48,23 @@ class SkillController {
         return res.status(result.status).json({ error: result.error });
       res.status(200).json({ post: result.post });
     }
+    
+    updateSkill = async (req:Request, res:Response) => {
+      const { id } = req.params;
+      if (!id)
+        return res.status(401).json({ error: "Id is required" });
+      const updates = req.body;
+      delete updates._id;
+      delete updates.__v;
+      delete updates.createdAt;
+      delete updates.author;
+      delete updates.upvotes;
+      delete updates.dowvotes;
+      const result = await this.service.update(id, updates);
+      if (!result.post)
+        return res.status(result.status).json({ error: result.error});
+      res.status(result.status).json({ post: result.post});
+    }
 }
 
 const skillController = new SkillController();
