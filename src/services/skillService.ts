@@ -58,6 +58,17 @@ class SkillService {
         return { status: 500, error: "Internal server error" };
       }
     }
+    
+    async update(id: string, updates: { title?: string, message?: string }): Promise<{ status: number, error: string, post?: Post }> {
+      try {
+        const post = await PostModel.findByIdAndUpdate(id, updates, { new: true }).lean();
+        if (!post) return { status: 404, error: "User not found" };
+        return { status: 200, error: "", post: post as unknown as Post };
+      } catch (err) {
+        console.error("Internal error on update an user:", err);
+        return { status: 500, error: "Internal server error" };
+      }
+    }
 }
 
 export default function skillService() {
