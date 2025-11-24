@@ -8,7 +8,9 @@ skillRoutes.post('/skill', verifyJWT, skillController.createSkill);
 skillRoutes.get('/skills', skillController.getAllSkills);
 skillRoutes.get('/skill/:id', skillController.getSkillById);
 skillRoutes.get('/skills/:id', skillController.getAllSkillsOfAUser);
-// skillRoutes.put('/skill/:id', verifyJWT, skillController.updateSkill);
-// skillRoutes.delete('/skill/:id', verifyJWT, skillController.deleteSkill);
+skillRoutes.put('/skill/:id', verifyJWT, skillController.updateSkill);
+skillRoutes.delete('/skill/:id', verifyJWT, skillController.deleteSkill);
+skillRoutes.post('/vote/:id', verifyJWT, skillController.vote);
+// skillRoutes.get('/votes/:id', skillController.getVotes);
 
 export default skillRoutes;

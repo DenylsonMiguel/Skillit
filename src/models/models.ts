@@ -1,30 +1,20 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// ----------------- UPVOTE -----------------
-export interface Upvote extends Document {
-    author: string;
-    createdAt: Date;
-}
-
-const upvoteSchema = new Schema<Upvote>({
-    author: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-
-export const UpvoteModel = mongoose.model<Upvote>("Upvote", upvoteSchema);
 
 // ---------------- DOWNVOTE ----------------
-export interface Downvote extends Document {
+export interface Vote extends Document {
     author: string;
     createdAt: Date;
+    value: "up" | "down";
 }
 
-const downvoteSchema = new Schema<Downvote>({
+const voteSchema = new Schema<Vote>({
     author: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    value: { type: String, required: true }
 });
 
-export const DownvoteModel = mongoose.model<Downvote>("Downvote", downvoteSchema);
+export const VoteModel = mongoose.model<Vote>("Vote", voteSchema);
 
 // ------------------ POST ------------------
 export interface Post extends Document {
@@ -32,16 +22,14 @@ export interface Post extends Document {
     message: string;
     author: string;
     createdAt: Date;
-    upvotes: Upvote[];
-    downvotes: Downvote[];
+    votes: string[];
 }
 
 const postSchema = new Schema<Post>({
     title: { type: String, required: true, unique: true },
     message: { type: String, required: true },
     author: { type: String, required: true },
-    upvotes: { type: [upvoteSchema], default: [] },
-    downvotes: { type: [downvoteSchema], default: [] },
+    votes: { type: [String], default: [] },
     createdAt: { type: Date, default: Date.now }
 });
 

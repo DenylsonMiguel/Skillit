@@ -1,5 +1,5 @@
-import type { Post, User } from "../models/models.js";
-import { PostModel, UserModel } from "../models/models.js";
+import type { Post, User, Vote } from "../models/models.js";
+import { PostModel, UserModel, VoteModel } from "../models/models.js";
 import type { UserTokenInfo } from "../utils/userUtils.js"
 import mongoose from "mongoose";
 
@@ -42,6 +42,68 @@ class SkillService {
             posts.push(skill);
         }
         return { posts: posts, status: 200, error: "" };
+    }
+    
+    async deletePost(id: string, user: UserTokenInfo): Promise<{ status: number, error: string, post?: Post }> {
+      try {
+        const post = await PostModel.findById(id);
+        if (!post)
+          return { status: 404, error: "Post not found" };
+        if (post.author !== user.name)
+          return { status: 406, error: "Not authorized" };
+        await post.deleteOne();
+        return { status: 200, error: "", post: post };
+      } catch (err) {
+        console.error(`An Error as ocurrupted: ${err}`);
+        return { status: 500, error: "Internal server error" };
+      }
+    }
+    
+    async update(id: string, updates: { title?: string, message?: string }, user: UserTokenInfo): Promise<{ status: number, error: string, post?: Post }> {
+      try {
+        const post = await PostModel.findById(id);
+        if (!post) return { status: 404, error: "User not found" };
+        if (user.name !== post.author) return { status: 406, error: "User unauthorized" };
+        const updatedPost = await PostModel.findByIdAndUpdate(id, updates, { new: true }).lean();
+        return { status: 200, error: "", post: post as unknown as Post };
+      } catch (err) {
+        console.error("Internal error on update an user:", err);
+        return { status: 500, error: "Internal server error" };
+      }
+    }
+    
+    async vote(id: string, user: UserTokenInfo, value: "up"|"down"): Promise<{ status: number, error: string, vote?: Vote }> {
+      try {
+        const post = await PostModel.findById(id);
+        if (!post)
+          return { status: 404, error: "Post not found" };
+        let existing: Vote | null = null;
+
+        for (const voteId of post.votes) {
+          const vote = await VoteModel.findById(voteId);
+          if (vote && vote.author === user.name) {
+            existing = vote;
+            break;
+          }
+        }
+        
+        let vote;
+        if (!existing) {
+          vote = await VoteModel.create({
+            author: user.name,
+            value: value
+          });
+          post.votes.push(vote._id as string)
+        } else {
+          existing.value = existing.value === "up" ? "down" : "up";
+          vote = existing;
+        }
+        await post.save();
+        return { status: 200, error: "", vote: vote as unknown as Vote };
+      } catch (err) {
+        console.error("Internal error on update an user:", err);
+        return { status: 500, error: "Internal server error" };
+      }
     }
 }
 
