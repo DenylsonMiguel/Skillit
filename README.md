@@ -41,6 +41,7 @@ DB_URI=<your-MONGO-DB-URI>
 JWT_SECRET=<your-jwt-secret>
 FRONT=<your-front-host>
 HOST=<your-host>
+ADMIN_PASS=<your-admin-pass>
 ```
 
 3. Now run these commands and your application will be running.
@@ -58,7 +59,7 @@ npm start
 |--------|-------|------------|--------------|
 | <span style="color: #007bff;">POST</span> | `/auth/register` | Creates a pending user and returns a confirmation token | ❌ |
 | <span style="color: #007bff;">POST</span> | `/auth/login` | Logs in a user and returns a JWT token | ❌ |
-| <span style="color: #28a745;">GET</span> | `/confirm/:token` | Confirms a pending user using the email token | ❌ |
+| <span style="color: #28a745;">POST</span> | `/confirm/:token` | Confirms a pending user using the email token | ❌ |
 
 ### **Users**
 | Method | Route | Description | JWT Required |
@@ -119,6 +120,14 @@ For /auth/register, password must be at least 8 characters and name between 3 an
 {
     "title": "example",
     "message": "Example message for API docs"
+}
+```
+
+To create an admin on the confirm/:token route, use this body:
+
+```json
+{
+  "rolePass": "<your-admin-pass>"
 }
 ```
 ## Final considerations
