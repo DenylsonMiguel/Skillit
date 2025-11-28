@@ -10,7 +10,7 @@ const userRoutes = Router();
  *   post:
  *     summary: Registra um novo usuário
  *     tags:
- *       - Usuários
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:
@@ -41,7 +41,7 @@ userRoutes.post('/auth/register', userController.register);
  *   post:
  *     summary: Faz login de um usuário existente
  *     tags:
- *       - Usuários
+ *       - Users
  *     requestBody:
  *       required: true
  *       content:
@@ -69,23 +69,33 @@ userRoutes.post('/auth/login', userController.login);
 /**
  * @openapi
  * /confirm/{token}:
- *   get:
+ *   post:
  *     summary: Confirma o registro de um usuário através do token
  *     tags:
- *       - Usuários
+ *       - Users
  *     parameters:
  *       - name: token
  *         in: path
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rolePass:
+ *                 type: string
+ *                 example: SECRET
  *     responses:
  *       200:
  *         description: Conta confirmada
  *       400:
  *         description: Token inválido ou expirado
  */
-userRoutes.get('/confirm/:token', userController.confirm);
+userRoutes.post('/confirm/:token', userController.confirm);
 
 /**
  * @openapi
@@ -93,7 +103,7 @@ userRoutes.get('/confirm/:token', userController.confirm);
  *   get:
  *     summary: Retorna todos os usuários
  *     tags:
- *       - Usuários
+ *       - Users
  *     responses:
  *       200:
  *         description: Lista de usuários
@@ -106,7 +116,7 @@ userRoutes.get('/users', userController.getAllUsers);
  *   get:
  *     summary: Retorna um usuário específico
  *     tags:
- *       - Usuários
+ *       - Users
  *     parameters:
  *       - name: id
  *         in: path
@@ -129,7 +139,7 @@ userRoutes.get('/user/:id', userController.getOneUser);
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - Usuários
+ *       - Users
  *     parameters:
  *       - name: id
  *         in: path
@@ -167,7 +177,7 @@ userRoutes.put('/user/:id', verifyJWT, userController.updateUser);
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - Usuários
+ *       - Users
  *     responses:
  *       200:
  *         description: Usuário autenticado retornado
@@ -176,6 +186,52 @@ userRoutes.put('/user/:id', verifyJWT, userController.updateUser);
  */
 userRoutes.get('/me', verifyJWT, userController.whoAmI);
 
+/**
+ * @swagger
+ * /user/{id}:
+ *   delete:
+ *     summary: Deleta um usuário pelo ID
+ *     description: Remove um usuário do sistema usando seu ID. Retorna o usuário deletado se existir.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário a ser deletado
+ *     responses:
+ *       200:
+ *         description: Usuário deletado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: ID inválido ou não fornecido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid ID
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ */
 userRoutes.delete("/user/:id", verifyJWT, userController.deleteUser);
 
 export default userRoutes;

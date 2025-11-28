@@ -1,15 +1,11 @@
 import "express";
 import type { Post } from "./models/models.js";
+import type { UserTokenInfo } from "./utils/userUtils.js";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        id: string;
-        name: string;
-        expiresIn: number;
-        posts: Post[];
-      };
+      user?: UserTokenInfo;
     }
   }
 }

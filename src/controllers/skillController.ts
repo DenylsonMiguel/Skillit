@@ -1,7 +1,6 @@
 import skillService from "../services/skillService.js";
 import type { Request, Response } from "express";
 
-
 class SkillController {
     private service = skillService();
     
@@ -35,7 +34,55 @@ class SkillController {
         const result = await this.service.getAllOfUser(req.params.id);
         if (!result.posts)
             res.status(result.status).json({ error: result.error });
-        res.json(result.posts);
+        res.json({ posts: result.posts });
+    }
+    
+    deleteSkill = async (req:Request, res:Response) => {
+      if (!req.params.id)
+        return res.status(401).json("Invalid or missing ID");
+      if (!req.user)
+        return res.status(406).json({ error: "Login is required" });
+      const result = await this.service.deletePost(req.params.id, req.user);
+      if (!result.post)
+        return res.status(result.status).json({ error: result.error });
+      res.status(200).json({ post: result.post });
+    }
+    
+    updateSkill = async (req:Request, res:Response) => {
+      const { id } = req.params;
+      if (!id)
+        return res.status(401).json({ error: "Id is required" });
+      const updates = req.body;
+      delete updates._id;
+      delete updates.__v;
+      delete updates.createdAt;
+      delete updates.author;
+      delete updates.upvotes;
+      delete updates.dowvotes;
+      const result = await this.service.update(id, updates, req.user);
+      if (!result.post)
+        return res.status(result.status).json({ error: result.error});
+      res.status(result.status).json({ post: result.post });
+    }
+    
+    vote = async (req:Request, res:Response) => {
+      const { id } = req.params;
+      const { value } = req.body;
+      if (!value || (value.toUpperCase() !== "UP" && value.toUpperCase() !== "DOWN")) return res.status(401).json({ error: "Invalid or Missing vote value" });
+      if (!id) return res.status(401).json({ error: "ID is required" });
+      if (!req.user) return res.status(406).json({ error: "Login is required" });
+      const result = await this.service.vote(id, req.user, value);
+      if (!result.vote)
+        return res.status(result.status).json({ error: result.error });
+      return res.status(result.status).json({ vote: result.vote });
+    }
+    
+    getVotes = async (req: Request, res:Response) => {
+      const { id } = req.params;
+      if (!id) return res.status(401).json({ error: "Invalid or missing Id" });
+      const result = await this.service.getVotes(id);
+      if (!result.upvotes && !result.downvotes) return res.status(result.status).json({ error: result.error });
+      return res.status(result.status).json({ upvotes: result.upvotes, downvotes: result.downvotes });
     }
     
     deleteSkill = async (req:Request, res:Response) => {

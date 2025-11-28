@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { UserService } from "../services/userService.js";
+import "dotenv/config";
 
 class UserController {
     private service: UserService = new UserService();
@@ -23,7 +24,9 @@ class UserController {
         if (!req.params.token)
             return res.status(400).json({ error: "token not found" });
         const { token } = req.params;
-        const result = await this.service.confirm(token);
+        const { rolePass } = req.body;
+        const role = rolePass === process.env.ADMIN_PASS ? "admin" : "user";
+        const result = await this.service.confirm(token, role);
         if (!result.user)
             res.status(result.status).json({ error: result.message });
         res.status(result.status).json(result.user);
@@ -49,6 +52,7 @@ class UserController {
         delete updates._id;
         delete updates.__v;
         delete updates.createdAt;
+        delete updates.role;
         const result = await this.service.update(id, updates);
         if (!result.user)
             return res.status(result.status).json({ error: result.message });
@@ -72,14 +76,28 @@ class UserController {
         res.json({ name: user.name, id: user.id });
     }
     
-    deleteUser = async (req: Request, res: Response) => {
-        if (!req.params.id)
-            return res.status(401).json({ error: "Id not found" })
-        const result = await this.service.deleteUser(req.params.id);
-        if (!result.user)
-            return res.status(result.status).json({ error: result.message })
-        res.status(result.status).json({ user: result.user })
-    }
+  deleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+  
+    if (!id)
+      return res.status(400).json({ error: "ID not provided" });
+  
+    if (!req.user)
+      return res.status(401).json({ error: "Not authenticated" });
+  
+    const isOwner = req.user.id === id;
+    const isAdmin = req.user.role === "admin";
+  
+    if (!isOwner && !isAdmin)
+      return res.status(403).json({ error: "Not allowed" });
+  
+    const result = await this.service.deleteUser(id);
+  
+    if (!result.user)
+      return res.status(result.status).json({ error: result.message });
+  
+    res.status(result.status).json({ user: result.user });
+  }
 }
 
 export const userController = new UserController(); 
