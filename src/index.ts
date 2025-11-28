@@ -7,6 +7,9 @@ if (!process.env.PORT)
   throw new Error("PORT not found");
 const PORT = parseInt(process.env.PORT);
 
+if (!process.env.ADMIN_PASS)
+  throw new Error("ADMIN_PASS not found");
+
 await connectDB();
 setupSwagger(app);
 

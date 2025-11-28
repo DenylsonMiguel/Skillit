@@ -1,7 +1,6 @@
 import skillService from "../services/skillService.js";
 import type { Request, Response } from "express";
 
-
 class SkillController {
     private service = skillService();
     
@@ -35,7 +34,7 @@ class SkillController {
         const result = await this.service.getAllOfUser(req.params.id);
         if (!result.posts)
             res.status(result.status).json({ error: result.error });
-        res.json(result.posts);
+        res.json({ posts: result.posts });
     }
     
     deleteSkill = async (req:Request, res:Response) => {
@@ -76,6 +75,14 @@ class SkillController {
       if (!result.vote)
         return res.status(result.status).json({ error: result.error });
       return res.status(result.status).json({ vote: result.vote });
+    }
+    
+    getVotes = async (req: Request, res:Response) => {
+      const { id } = req.params;
+      if (!id) return res.status(401).json({ error: "Invalid or missing Id" });
+      const result = await this.service.getVotes(id);
+      if (!result.upvotes && !result.downvotes) return res.status(result.status).json({ error: result.error });
+      return res.status(result.status).json({ upvotes: result.upvotes, downvotes: result.downvotes });
     }
 }
 

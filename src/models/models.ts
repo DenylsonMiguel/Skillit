@@ -26,7 +26,7 @@ export interface Post extends Document {
 }
 
 const postSchema = new Schema<Post>({
-    title: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
     message: { type: String, required: true },
     author: { type: String, required: true },
     votes: { type: [String], default: [] },
@@ -41,12 +41,14 @@ export interface User extends Document {
     password: string;
     posts: mongoose.Types.ObjectId[];
     createdAt: Date;
+    role: "user" | "admin";
 }
 
 const userSchema = new Schema<User>({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
+    role: { type: String, required: true },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
 

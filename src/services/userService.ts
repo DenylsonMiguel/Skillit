@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import type { UserTokenInfo } from "../utils/userUtils.js";
+import mongoose from "mongoose";
 
 if (!process.env.JWT_SECRET)
     throw new Error("JWT_SECRET not found");
@@ -12,6 +13,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export class UserService {
     async register(data: { name: string; password: string }): Promise<{ status: number; message: string; token?: string }> {
+    try {
         if (!data.name || !data.password)
             return { status: 400, message: "The name or password is invalid" };
 
@@ -25,9 +27,14 @@ export class UserService {
         await pending.save();
 
         return { status: 202, message: "User pending created", token: pending.token };
+    } catch (err) {
+      console.error("Internal error on update an user:", err);
+        return { status: 500, message: "Internal server error" };
+    }
     }
 
-    async confirm(token: string): Promise<{ status: number; message: string; user?: User }> {
+    async confirm(token: string, role: "user" | "admin"): Promise<{ status: number; message: string; user?: User }> {
+      try {
         const pending = await PendingUserModel.findOne({ token });
         if (!pending)
             return { status: 404, message: "invalid or expired token" };
@@ -36,14 +43,19 @@ export class UserService {
         if (existingUser)
             return { status: 409, message: "User already registered" };
 
-        const user = new UserModel({ name: pending.name, password: pending.password });
+        const user = new UserModel({ name: pending.name, password: pending.password, role: role });
         await user.save();
         await PendingUserModel.deleteOne({ token });
 
         return { status: 201, message: "User registered", user: user.toObject() as unknown as User };
+      } catch (err) {
+        console.error("Internal error on update an user:", err);
+        return { status: 500, message: "Internal server error" };
+      }
     }
 
     async login(data: { name: string; password: string }): Promise<{ status: number; message: string; token?: string }> {
+      try {
         const user = await UserModel.findOne({ name: data.name });
         if (!user)
             return { status: 404, message: "User not found" };
@@ -54,6 +66,10 @@ export class UserService {
 
         const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: "1h" });
         return { status: 200, message: "login successful", token };
+      } catch (err) {
+        console.error("Internal error on update an user:", err);
+        return { status: 500, message: "Internal server error" };
+      }
     }
 
     getAllUsers = async (): Promise<User[]> => {
@@ -62,6 +78,9 @@ export class UserService {
     };
 
     async update(id: string, updates: { name?: string; password?: string }): Promise<{ status: number; message: string; user?: User }> {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return { status: 401, message: "Invalid ID" };
+      }
         try {
             if (updates.password)
                 updates.password = await bcrypt.hash(updates.password, 10);
@@ -84,11 +103,20 @@ export class UserService {
 
     whoAmI = async (user: UserTokenInfo): Promise<UserTokenInfo> => user;
 
-    deleteUser = async (id: string): Promise<{ status: number; message: string; user?: User }> => {
-        const userDeleted = await UserModel.findByIdAndDelete(id).lean();
-        if (!userDeleted)
-            return { status: 404, message: "User not found" };
+  deleteUser = async (id: string): Promise<{ status: number; message: string; user?: User }> => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return { status: 400, message: "Invalid ID" };
+  }
 
-        return { status: 200, message: "User deleted", user: userDeleted as unknown as User };
-    };
+  const userDeleted = await UserModel.findByIdAndDelete(id).lean();
+
+  if (!userDeleted)
+    return { status: 404, message: "User not found" };
+
+  return {
+    status: 200,
+    message: "User deleted",
+    user: userDeleted as unknown as User
+  };
+}
 }
