@@ -34,13 +34,9 @@ class UserController {
     
     login = async (req: Request, res: Response) => {
         const data = { name: req.body.name, password: req.body.password };
-        if (data.password.length < 8)
-            return res.status(400).json({ "message": "Password length must be greater than 8 characters" });
-        if (data.name.length < 3 || data.name.length > 15)
-            return res.status(400).json({ "message": "the name must be between 3 and 15 characters" });
-        
+        if (!data.password || !data.name)
+            return res.status(400).json({ "error": "Password and Name as required" });
         const result = await this.service.login(data);
-        
         if (!result.token)
             return res.status(result.status).json({ error: result.message });
         res.status(200).json({ token: result.token });
@@ -51,7 +47,7 @@ class UserController {
     updateUser = async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id)
-            return res.status(401).json({ error: "Id is required" })
+            return res.status(401).json({ error: "Id is required" });
         const updates = req.body;
         delete updates._id;
         delete updates.__v;
